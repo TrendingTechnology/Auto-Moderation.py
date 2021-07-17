@@ -363,6 +363,4 @@ async def on_guild_join(guild):
   with open("antispam.json","w") as fp:
     json.dump(antiswear,fp)
 
-my_secret = os.environ['Token']
-
-client.run(my_secret)
+client.run("BOT-TOKEN")
