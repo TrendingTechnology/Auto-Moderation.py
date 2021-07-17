@@ -66,8 +66,52 @@ async def on_ready():
   print("|---------------------------------------------------------|")
 
 @client.command()
+async def help(ctx):
+  help = discord.Embed(title="My Commands",description="**[[Github](https://github.com/GMAX2/Auto-Moderation.py)]** **[[Disbots.xyz](https://disbots.xyz)]**",color=discord.Color.blue())
+  help.add_field(name="**Moderation Commands**",value="`+kick <@user> <reason>` - Kicks the user mentioned\n`+ban <@user> <reason>` - Bans the user mentioned\n`+settings` - Shows auto moderation settings",inline=False)
+  help.add_field(name="**Auto Moderation Commands**",value="`+antilink` - Sends you the option to select to turn on or off Anti Link System\n`+antiswear` - Sends you the option to select to turn on or off Anti Swear System\n`+antispam` - Sends you the option to select to turn on or off Anti Spam System\n`+antiping` - Sends you the option to select to turn on or off Anti Ping System",inline=False)
+  help.set_thumbnail(url=client.user.avatar_url)
+  await ctx.send(embed=help)
+
+@client.command()
+@commands.has_permissions(kick_members = True)
+async def kick(ctx,member:discord.Member,*,reason):
+  check = discord.Embed(title=f"Are you sure to kick {member.name}?",color=discord.Color.blue())
+  await ctx.send(embed=check,
+    components=[[
+      Button(style=ButtonStyle.green,label = "Yes"),
+      Button(style=ButtonStyle.red,label = "No"),
+    ]])
+  res = await client.wait_for("button_click")
+  if ctx.author == res.author:
+    if res.component.label == "Yes":
+      await member.kick(reason=reason)
+      await ctx.send(f"{ctx.author.name} kicked {member.name}\n**Reason:** {reason}")
+      await res.respond(content = f"I have kicked {member.name}")
+    if res.component.label == "No":
+      await res.respond(content = "I have canceled kick command")
+
+@client.command()
+@commands.has_permissions(ban_members = True)
+async def ban(ctx,member:discord.Member,*,reason):
+  check = discord.Embed(title=f"Are you sure to kick {member.name}?",color=discord.Color.blue())
+  await ctx.send(embed=check,
+    components=[[
+      Button(style=ButtonStyle.green,label = "Yes"),
+      Button(style=ButtonStyle.red,label = "No"),
+    ]])
+  res = await client.wait_for("button_click")
+  if ctx.author == res.author:
+    if res.component.label == "Yes":
+      await member.ban(reason=reason)
+      await ctx.send(f"{ctx.author.id} banned {member.name}\n**Reason:** {reason}")
+      await res.respond(content = f"I have banned {member.name}")
+    if res.component.label == "No":
+      await res.respond(content = "I have canceled ban command")
+
+@client.command()
 async def settings(ctx):
-  config = discord.Embed(title="**Config!**",description=f"\nWhen i join server all setting will be default [Invite Me](https://discord.com/oauth2/authorize?client_id={client.user.id}&permissions=8&scope=bot)",color=discord.Color.red())
+  config = discord.Embed(title="**Config!**",description=f"\nWhen i join server all setting will be default [Invite Me](https://discord.com/oauth2/authorize?client_id={client.user.id}&permissions=8&scope=bot)",color=discord.Color.blue())
   try:
     with open("antiads.json","r") as f:
         antilink = json.load(f)
@@ -167,7 +211,7 @@ async def antiping(ctx):
 async def antiswear(ctx):
   with open("antiswear.json","r") as f:
     antiswear = json.load(f)
-  antiswearembed = discord.Embed(title="Please select the option given below!",color=discord.Color.red())
+  antiswearembed = discord.Embed(title="Please select the option given below!",color=discord.Color.blue())
   await ctx.send(embed=antiswearembed,
     components=[[
       Button(style=ButtonStyle.green,label = "On"),
@@ -191,7 +235,7 @@ async def antiswear(ctx):
 async def antispam(ctx):
   with open("antispam.json","r") as f:
     antispam = json.load(f)
-  antispamembed = discord.Embed(title="Please select the option given below!",color=discord.Color.red())
+  antispamembed = discord.Embed(title="Please select the option given below!",color=discord.Color.blue())
   await ctx.send(embed=antispamembed,
     components=[[
       Button(style=ButtonStyle.green,label = "On"),
@@ -238,6 +282,9 @@ time_window_milliseconds = 5000
 max_msg_per_window = 7
 author_msg_times = {}
 
+with open('badwords.txt') as file:
+    file = file.read().split()
+
 @client.event
 async def on_message(message):
     with open("antiads.json","r") as f:
@@ -269,8 +316,8 @@ async def on_message(message):
         await message.delete()
         await message.channel.send(f"{message.author.mention} Please dont ping anyone here")
     if checkswear == 'on':
-      with open('badwords.txt') as BadWords:
-        if message.content.lower() in BadWords.read():
+      for badword in file:
+        if badword in message.content.lower():
             await message.delete()
             await message.channel.send(f"{message.author.mention} Please dont use that word!")
     if checkspam == 'on':
