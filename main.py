@@ -19,21 +19,21 @@ async def on_ready():
   try:
     with open("antiads.json","r") as f:
         antilink = json.load(f)
-        checklink = antilink[str(YOUR-GUILD-ID)]
+        checklink = antilink[str("YOUR-GUILD-ID")]
   except:
     checklink = "off"
     pass
   try:
     with open("antiping.json","r") as f:
         antiping = json.load(f)
-        checkping = antiping[str(YOUR-GUILD-ID)]
+        checkping = antiping[str("YOUR-GUILD-ID")]
   except:
     checkping = "off"
     pass
   try:
     with open("antiswear.json","r") as f:
         antiping = json.load(f)
-        checkswear = antiping[str(YOUR-GUILD-ID)]
+        checkswear = antiping[str("YOUR-GUILD-ID")]
   except:
     checkswear = "off"
     pass
@@ -275,7 +275,7 @@ async def on_message(message):
             await message.channel.send(f"{message.author.mention} Please dont use that word!")
     if checkspam == 'on':
       global author_msg_counts
-      author_id = ctx.author.id
+      author_id = message.author.id
       curr_time = datetime.datetime.now().timestamp() * 1000
       if not author_msg_times.get(author_id, False):
           author_msg_times[author_id] = []
