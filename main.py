@@ -303,19 +303,29 @@ async def on_message(message):
       if "https://disbots.xyz" in message.content:
         pass
       elif "https" in message.content:
+        if message.author.guild_permissions.manage_messages:
+          pass
         await message.delete()
         await message.channel.send(f"{message.author.mention} Please dont send links here")
       elif "http" in message.content:
+        if message.author.guild_permissions.manage_messages:
+          pass
         await message.delete()
         await message.channel.send(f"{message.author.mention} Please dont send links here")
       elif "www." in message.content:
+        if message.author.guild_permissions.manage_messages:
+          pass
         await message.delete()
         await message.channel.send(f"{message.author.mention} Please dont send links here")
     if checkping == 'on':
       if "<@" in message.content:
+        if message.author.guild_permissions.manage_messages:
+          pass
         await message.delete()
         await message.channel.send(f"{message.author.mention} Please dont ping anyone here")
     if checkswear == 'on':
+      if message.author.guild_permissions.manage_messages:
+          pass
       for badword in file:
         if badword in message.content.lower():
             await message.delete()
@@ -362,5 +372,6 @@ async def on_guild_join(guild):
   antispam[str(guild.id)] = 'off'
   with open("antispam.json","w") as fp:
     json.dump(antiswear,fp)
+
 
 client.run("BOT-TOKEN")
